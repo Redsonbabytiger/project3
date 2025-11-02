@@ -20,5 +20,5 @@ def main():
     print("Suddenly, a", adjective3, noun4, "appeared and tried to", verb3, "everything.")
     print("In the end, the", noun1, "felt very", adjective4, "about the whole adventure.")
     print("The end!")
-    print()2
+    print()
     
