@@ -9,10 +9,10 @@ WIDTH, HEIGHT = 400, 400
 BOX_SIZE = 20
 
 # --- Speed Settings ---
-WHITE_SPEED = 10
+WHITE_SPEED = 20
 GREEN_SPEED = 5
 RED_SPEED = 2
-ORANGE_SPEED = 6
+ORANGE_SPEED = 4
 
 # --- Enemy Spawning Settings ---
 # Enemy spawn timing (influenced by SPAWN_RATE)
@@ -24,8 +24,8 @@ SPAWN_MIN_MS = int(500 * SPAWN_RATE)
 SPAWN_MAX_MS = int(2500 * SPAWN_RATE)
 
 # --- Shooting settings ---
-GREEN_SHOOT_COOLDOWN = 200   # milliseconds between shots
-ORANGE_SHOOT_COOLDOWN = 600  # slower homing missile rate
+GREEN_SHOOT_COOLDOWN = 0   # milliseconds between shots
+ORANGE_SHOOT_COOLDOWN = 0  # milliseconds between shots
 
 # Colors
 BLACK = (0, 0, 0)
@@ -131,23 +131,26 @@ def main():
 
     next_spawn_time = pygame.time.get_ticks() + random.randint(SPAWN_MIN_MS, SPAWN_MAX_MS)
 
+    # track when last shot was fired (for cooldowns)
+    last_green_shot = 0
+    last_orange_shot = 0
+    
     running = True
     while running:
         dt = clock.tick(60)  # 60 FPS target
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-
+            
             # keydown events for shooting (space and enter)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    # shoot green from player's position
                     g = GreenProjectile(player.rect.x, player.rect.y)
                     greens.append(g)
                 elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
-                    # shoot orange homing from player's position
                     o = OrangeProjectile(player.rect.x, player.rect.y)
                     oranges.append(o)
+
 
         # key held down for movement
         keys = pygame.key.get_pressed()
@@ -170,6 +173,18 @@ def main():
             dy += WHITE_SPEED
         player.move(dx, dy)
         
+        # continuous shooting (hold to fire)
+        now = pygame.time.get_ticks()
+        if keys[pygame.K_SPACE] and now - last_green_shot >= GREEN_SHOOT_COOLDOWN:
+            g = GreenProjectile(player.rect.x, player.rect.y)
+            greens.append(g)
+            last_green_shot = now
+        
+        if (keys[pygame.K_RETURN] or keys[pygame.K_KP_ENTER]) and now - last_orange_shot >= ORANGE_SHOOT_COOLDOWN:
+            o = OrangeProjectile(player.rect.x, player.rect.y)
+            oranges.append(o)
+            last_orange_shot = now
+
         if HEALTH < 1:
             print("You ran out of health.")
             break
