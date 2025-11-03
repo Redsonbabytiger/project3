@@ -19,7 +19,7 @@ while choice != "0":
     elif choice == "1":
         MadLib.main()
     elif choice == "2":
-        HighLowGame.userAsksComputer()
+        HighLowGame.computerGuesses()
     elif choice == "3":
         box_shooter.main()
     elif choice == "4":

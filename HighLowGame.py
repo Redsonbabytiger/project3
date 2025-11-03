@@ -18,10 +18,13 @@ def computerAsksUser():
 
 def computerGuesses():
     guessNum = int(input("What number should the computer guess? "))
+    maxNum = 100
+    if guessNum > 100:
+        maxNum = guessNum
     tryNum = 0
-    computerGuess = random.randint(1, 100)
+    computerGuess = random.randint(1, maxNum)
     while computerGuess != guessNum:
-        computerGuess = random.randint(1, 100)
+        computerGuess = random.randint(1, maxNum)
         tryNum += 1
         if computerGuess > guessNum:
             print("Computer guessed", computerGuess, "Which was too high.")
@@ -34,7 +37,7 @@ def computerGuesses():
             print("And it only took the computer", tryNum, "tries.")
 
 def computerGuessesNoOutput():
-    guessNum = int(input("What number should the computer guess? "))
+    guessNum = int(input("What number should the computer guess? (Should be between 1-100): "))
     maxNum = 100
     if guessNum > 100:
         maxNum = guessNum
@@ -64,8 +67,8 @@ def userAsksComputer():
     print("Computer guesses "+str(guess))
     while True:
         while True:
-            horl=input("Is the your number Higher or Lower or did the computer guess correct(say You Guessed It)? ")
-            if guess<num and horl!="Higher" or guess>num and horl!="Lower" or num==guess and horl!="You Guessed It":
+            horl=str.lower(input("Is the your number Higher or Lower or did the computer guess correct(say You Guessed It)? "))
+            if guess<num and horl!="higher" or guess>num and horl!="lower" or num==guess and horl!="you guessed it":
                 print("Try again")
             else:
                 break
@@ -80,4 +83,3 @@ def userAsksComputer():
         if horl=="You Guessed It":
             break
     print("Congrats! It took the computer " + str(turns) + " guesses.")
-

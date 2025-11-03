@@ -4,19 +4,28 @@ import random
 import math
 import sys
 
-# Config (matches the HTML/JS values)
+# --- Game Config Settings
 WIDTH, HEIGHT = 400, 400
 BOX_SIZE = 20
 
+# --- Speed Settings ---
 WHITE_SPEED = 10
 GREEN_SPEED = 5
 RED_SPEED = 2
-ORANGE_SPEED = 3
+ORANGE_SPEED = 6
 
-SPAWN_MIN_MS = 500
-SPAWN_MAX_MS = 2500
+# --- Enemy Spawning Settings ---
+# Enemy spawn timing (influenced by SPAWN_RATE)
+# 1.0 = normal speed, <1 = faster spawns, >1 = slower spawns
+SPAWN_RATE = 0.1
 
+# Base spawn interval in milliseconds (scaled by SPAWN_RATE)
+SPAWN_MIN_MS = int(500 * SPAWN_RATE)
+SPAWN_MAX_MS = int(2500 * SPAWN_RATE)
 
+# --- Shooting settings ---
+GREEN_SHOOT_COOLDOWN = 200   # milliseconds between shots
+ORANGE_SHOOT_COOLDOWN = 600  # slower homing missile rate
 
 # Colors
 BLACK = (0, 0, 0)
@@ -25,6 +34,7 @@ GREEN = (0, 200, 0)
 RED = (200, 0, 0)
 ORANGE = (255, 140, 0)
 
+# --- Start of the actual code (no longer just settings) ---
 
 class Player:
     def __init__(self, x=0, y=0):
@@ -116,6 +126,8 @@ def main():
     enemies = []
     greens = []
     oranges = []
+    global HEALTH
+    HEALTH = 100
 
     next_spawn_time = pygame.time.get_ticks() + random.randint(SPAWN_MIN_MS, SPAWN_MAX_MS)
 
@@ -157,6 +169,11 @@ def main():
         elif keys[pygame.K_s]:
             dy += WHITE_SPEED
         player.move(dx, dy)
+        
+        if HEALTH < 1:
+            print("You ran out of health.")
+            break
+            return "Player died"
 
         # Update enemies
         for e in enemies[:]:
@@ -164,6 +181,7 @@ def main():
             # remove enemy if reaches bottom
             if e.rect.top > HEIGHT:
                 enemies.remove(e)
+                HEALTH -= 1
             else:
                 # check collision with oranges (orange removes red)
                 for o in oranges[:]:
@@ -222,7 +240,7 @@ def main():
             o.draw(screen)
 
         # small HUD (optional): counts
-        hud = FONT.render(f"Enemies: {len(enemies)}  Greens: {len(greens)}  Oranges: {len(oranges)}", True, (200, 200, 200))
+        hud = FONT.render(f"Enemies: {len(enemies)}  Greens: {len(greens)}  Oranges: {len(oranges)} Health: {HEALTH}", True, (200, 200, 200))
         screen.blit(hud, (6, HEIGHT - 20))
 
         pygame.display.flip()
